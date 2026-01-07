@@ -77,104 +77,103 @@ Step 4: Regenerated JWT
 
 Data access is enforced at:
 
-Controller level
-
-Service layer
-
-Repository queries
+        Controller level
+        
+        Service layer
+        
+        Repository queries
 
 Example:
 
-SELECT * FROM appointments
-WHERE hospital_id = :hospitalId;
+    SELECT * FROM appointments
+    WHERE hospital_id = :hospitalId;
 
 
 This ensures:
 
-Hospital A cannot access Hospital B’s data
-
-Same doctor can safely operate across multiple hospitals
+> Hospital A cannot access Hospital B’s data
+> Same doctor can safely operate across multiple hospitals
 
 5️⃣ OPD Appointment Booking Flow
 Step 1: Patient Registration
 
-Staff registers patient using phone number
-
-Existing patients are auto-detected
-
-Step 2: Appointment Booking
-
-Staff selects:
-
-Doctor
-
-Date & time slot
+    Staff registers patient using phone number
+    
+    Existing patients are auto-detected
+    
+    Step 2: Appointment Booking
+    
+    Staff selects:
+    
+    Doctor
+    
+    Date & time slot
 
 Backend performs:
 
-Doctor availability check
-
-Slot conflict prevention
-
-Transaction-safe booking
-
-Step 3: Transaction Safety
-
-Appointment booking runs inside @Transactional
-
-Prevents:
-
-Double booking
+    Doctor availability check
+    
+    Slot conflict prevention
+    
+    Transaction-safe booking
+    
+    Step 3: Transaction Safety
+    
+    Appointment booking runs inside @Transactional
+    
+    Prevents:
+    
+    Double booking
 
 Race conditions under concurrent requests
 
 6️⃣ Doctor Dashboard Flow
 
-When a doctor logs in:
-
-Selects hospital (if multiple)
-
-Dashboard loads:
-
-Today’s appointments
-
-Patient queue
-
-OPD status
-
-All data is fetched using hospital-scoped JWT.
+    When a doctor logs in:
+    
+    Selects hospital (if multiple)
+    
+    Dashboard loads:
+    
+    Today’s appointments
+    
+    Patient queue
+    
+    OPD status
+    
+    All data is fetched using hospital-scoped JWT.
 
 7️⃣ Security Design
 
-Stateless authentication using JWT
-
-Custom OncePerRequestFilter:
-
-Validates token
-
-Extracts user context
-
-Sets Spring Security Context
+    Stateless authentication using JWT
+    
+    Custom OncePerRequestFilter:
+    
+    Validates token
+    
+    Extracts user context
+    
+    Sets Spring Security Context
 
 Role-based authorization using:
 
-ADMIN
-
-DOCTOR
-
-STAFF
+    ADMIN
+    
+    DOCTOR
+    
+    STAFF
 
 8️⃣ Scalability & Concurrency
 
-Stateless APIs → horizontally scalable
-
-Multiple hospitals & staff can book appointments simultaneously
-
-Database consistency ensured using:
-
-Proper indexing
-
-Transaction boundaries
+    Stateless APIs → horizontally scalable
+    
+    Multiple hospitals & staff can book appointments simultaneously
+    
+    Database consistency ensured using:
+    
+    Proper indexing
+    
+    Transaction boundaries
 
 9️⃣ Real-World Design Benefits
 
