@@ -6,72 +6,73 @@ Each request is scoped by user role + hospital context, ensuring strict tenant i
 
 1️⃣ User Roles in the System
 
-The platform supports three types of users, all authenticated via OTP:
-
-Admin – Clinic/Hospital owner or manager
-
-Doctor – Medical practitioner associated with one or more hospitals
-
-Staff / Receptionist – Front-desk staff responsible for appointments
-
-A single person can hold multiple roles across different hospitals.
+    The platform supports three types of users, all authenticated via OTP:
+    
+    Admin – Clinic/Hospital owner or manager
+    
+    Doctor – Medical practitioner associated with one or more hospitals
+    
+    Staff / Receptionist – Front-desk staff responsible for appointments
+    
+    A single person can hold multiple roles across different hospitals.
 
 2️⃣ Authentication & Login Flow (OTP + JWT)
-Step 1: OTP Login
-
-User logs in using mobile number or email
-
-OTP is generated and validated
-
-System identifies the User identity (global)
-
-Step 2: Initial JWT Issued
-
-After OTP verification:
-
-A JWT token is generated with:
-
-userId
-
-role
-
-hospitalId = null
-
-At this stage, the user is authenticated but not yet scoped to a hospital.
+    
+    Step 1: OTP Login
+    
+    User logs in using mobile number or email
+    
+    OTP is generated and validated
+    
+    System identifies the User identity (global)
+    
+    Step 2: Initial JWT Issued
+    
+    After OTP verification:
+    
+    A JWT token is generated with:
+    
+    userId
+    
+    role
+    
+    hospitalId = null
+    
+    At this stage, the user is authenticated but not yet scoped to a hospital.
 
 3️⃣ Hospital Selection (Tenant Context Binding)
 
-If a user is associated with multiple hospitals, the frontend displays a hospital selection screen.
-
-Step 3: Select Hospital
-
-User selects a hospital
-
-Frontend calls /select-hospital
-
-Backend validates:
-
-User is linked to the selected hospital
-
-Role permissions match
+    If a user is associated with multiple hospitals, the frontend displays a hospital selection screen.
+    
+    Step 3: Select Hospital
+    
+    User selects a hospital
+    
+    Frontend calls /select-hospital
+    
+    Backend validates:
+    
+    User is linked to the selected hospital
+    
+    Role permissions match
 
 Step 4: Regenerated JWT
 
-A new JWT is issued with:
-
-userId
-
-role
-
-hospitalId (selected hospital)
+    A new JWT is issued with:
+    
+    userId
+    
+    role
+    
+    hospitalId (selected hospital)
 
 ➡️ From this point onward, every API request is tenant-aware.
 
 4️⃣ Tenant Isolation Strategy
 
-Every OPD operation is scoped by:
-
-userId + role + hospitalId
+    Every OPD operation is scoped by:
+    
+    userId + role + hospitalId
 
 
 Data access is enforced at:
