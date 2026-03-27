@@ -19,7 +19,7 @@ public class JwtUtil {
             "CHANGE_THIS_TO_A_64_CHAR_RANDOM_SECRET_KEY_1234567890";
 
     private static final long EXPIRATION_TIME =
-            1000 * 60 * 60 * 24; // 24 hours
+            1000 * 60 * 60*24; // 24 hours
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(

@@ -2,6 +2,7 @@ package com.medi_connect.Medi_Connect.SERVICE;
 
 import com.medi_connect.Medi_Connect.DTO.HospitalResponse;
 import com.medi_connect.Medi_Connect.REPOSITORIES.UserHospitalRepository;
+import com.medi_connect.Medi_Connect.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +14,10 @@ public class HospitalService {
     @Autowired
     private  UserHospitalRepository userHospitalRepository;
 
-    public List<HospitalResponse> getAllHospital(Long userId) {
+    public List<HospitalResponse> getAllHospital(Long userId , Role role) {
 
         return userHospitalRepository
-                .findHospitalsByUserId(userId)
+                .findHospitalsByUserIdAndRole(userId, role)
                 .stream()
                 .map(p -> new HospitalResponse(
                         p.getHospitalId(),

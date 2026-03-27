@@ -1,13 +1,14 @@
 package com.medi_connect.Medi_Connect.DTO;
 
 import com.medi_connect.Medi_Connect.Doctor_Status;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
+@Data
+@NoArgsConstructor
 public class DoctorResponseDto {
 
     private Long id;
@@ -16,4 +17,5 @@ public class DoctorResponseDto {
     private String phone;
     private Doctor_Status status;
     private String email;
+    private String role;
 }

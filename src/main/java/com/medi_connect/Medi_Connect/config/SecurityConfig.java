@@ -48,7 +48,8 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // 🔐 Admin only
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/admin/**").hasAnyAuthority("ADMIN","STAFF")
+                        .requestMatchers("/staff/**").hasAuthority("STAFF")
 
                         // 🔐 Doctor only
                         .requestMatchers("/doctor/**").hasAuthority("DOCTOR")

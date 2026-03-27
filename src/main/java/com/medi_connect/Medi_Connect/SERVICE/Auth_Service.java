@@ -50,6 +50,7 @@ public class Auth_Service {
             admin.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
             admin.setLocalDateTime(LocalDateTime.now());
             admin.setActive(true);
+            admin.setPhone(registerRequest.getPhone());
             userRepository.save(admin);
         }
 
@@ -83,17 +84,17 @@ public class Auth_Service {
         }
     }
 
-    public JwtResponse selectedHospital(Long hospitalId , Long adminId) throws AccessDeniedException {
+    public JwtResponse selectedHospital(Long hospitalId , Long adminId , Role role) throws AccessDeniedException {
 
         boolean allowed = userHospitalRepository.existsByHospitalIdAndUserId(hospitalId,adminId);
         if(!allowed){
             throw new AccessDeniedException("Hospital Not Linked to Admin..");
         }
 
-        String token = jwtUtil.generateToken(String.valueOf(adminId),adminId,Role.ADMIN,hospitalId);
+        String token = jwtUtil.generateToken(String.valueOf(adminId),adminId,role,hospitalId);
         JwtResponse response = new JwtResponse();
         response.setToken(token);
-        response.setRole(Role.ADMIN);
+        response.setRole(role);
         return response;
     }
 }

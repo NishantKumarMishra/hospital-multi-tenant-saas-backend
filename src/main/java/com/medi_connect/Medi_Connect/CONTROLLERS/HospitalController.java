@@ -2,6 +2,7 @@ package com.medi_connect.Medi_Connect.CONTROLLERS;
 
 import com.medi_connect.Medi_Connect.DTO.HospitalResponse;
 import com.medi_connect.Medi_Connect.DTO.JwtUserContext;
+import com.medi_connect.Medi_Connect.Role;
 import com.medi_connect.Medi_Connect.SERVICE.HospitalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/hospitals")
-public class Hospital {
+public class HospitalController {
 
     @Autowired
     private HospitalService hospitalService;
@@ -23,9 +24,11 @@ public class Hospital {
     public ResponseEntity<List<HospitalResponse>> getAllHospital(Authentication authentication){
         JwtUserContext context = (JwtUserContext) authentication.getPrincipal();
         Long admin_id = context.getUserId();
+        Role role = Role.valueOf(context.getRole());
 
-        return ResponseEntity.ok(hospitalService.getAllHospital(admin_id));
+        return ResponseEntity.ok(hospitalService.getAllHospital(admin_id,role));
 
     }
+
 
 }

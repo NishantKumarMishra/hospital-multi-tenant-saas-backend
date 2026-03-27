@@ -4,6 +4,7 @@ package com.medi_connect.Medi_Connect.Utils;
 
 import com.medi_connect.Medi_Connect.DTO.JwtUserContext;
 import com.medi_connect.Medi_Connect.Role;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -35,12 +37,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain)
-            throws ServletException, IOException {
+            throws ServletException, IOException
+    {
 
         String authHeader = request.getHeader("Authorization");
-        //request.getHeader("Content-Type");
 
-        // No token → continue
+
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -49,31 +52,41 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
         System.out.println("Authorization Header = " + authHeader);
 
-        if (jwtUtil.isTokenValid(token)) {
+        try {
 
-            Long userId = jwtUtil.extractUserId(token);
-            String role =  jwtUtil.extractRole(token);
-            Long hid = jwtUtil.extractHospitalId(token);
+            if (jwtUtil.isTokenValid(token)) {
 
-            JwtUserContext jwtUserContext = new JwtUserContext(userId,hid,role);
+                Long userId = jwtUtil.extractUserId(token);
+                String role =  jwtUtil.extractRole(token);
+                Long hid = jwtUtil.extractHospitalId(token);
 
+                JwtUserContext jwtUserContext = new JwtUserContext(userId,hid,role);
 
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                jwtUserContext,
+                                null,
+                                List.of(new SimpleGrantedAuthority( role))
+                        );
 
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            jwtUserContext,
-                            null,
-                            List.of(() -> role)
-                    );
-
-            authentication.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
-
-            SecurityContextHolder.getContext()
-                    .setAuthentication(authentication);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"message\": \"Token Expired\"}");
+                return;
+            }
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"message\": \"Session Expired. Please login again.\"}");
+            return;
         }
+
+
 
         filterChain.doFilter(request, response);
     }
